@@ -53,7 +53,7 @@ void Display(vector<int>& Array){
         cout << Array[i] << " ";
     }
 
-    cout << endl;
+    cout<<endl;
 }
 
 

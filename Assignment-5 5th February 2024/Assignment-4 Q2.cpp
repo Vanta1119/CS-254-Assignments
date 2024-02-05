@@ -36,7 +36,7 @@ double findMedian(vector<int> A, vector<int> B){
 
     int mid = A.size() + B.size(); 
 
-    if(mid % 2 == 1){
+    if(mid % 2 == 0){
         mid /= 2;
 
         for(int i = mi; i <= ma; i++){
@@ -74,7 +74,7 @@ void Display(vector<int>& Array){
         cout << Array[i] << " ";
     }
 
-    cout << endl;
+    cout<<endl;
 }
 
 int main(){
@@ -91,14 +91,7 @@ int main(){
     Display(RandomA);
     Display(RandomB);
 
-    cout << "The Mediam of RandomA and RandomB in the Odd Sum Case is: " << findMedian(RandomA, RandomB) << endl;
-
-    vector<int> RandomC = GenerateSorted(13), RandomD = GenerateSorted(7);
-
-    Display(RandomC);
-    Display(RandomD);
-
-    cout << "The Mediam of RandomA and RandomB in the Even Sum Case is: " << findMedian(RandomC, RandomD) << endl;
+    cout << "The Mediam of RandomA and RandomB is: " << findMedian(RandomA, RandomB) << endl;
 
     return 0;
 }
