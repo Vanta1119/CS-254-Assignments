@@ -40,7 +40,6 @@ void Display(vector<int>& Array){
     cout << endl;
 }
 
-
 int main(){
     vector<int> nums = {3, 2, 1};
     cout << "The Array has a total of " << Inversions(nums) << " inversions." << endl;
