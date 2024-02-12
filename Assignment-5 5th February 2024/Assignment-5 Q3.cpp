@@ -60,7 +60,6 @@ bool canBeDividedInTwoCliques(vector<vector<int>> graph){
 }
 
 int main() {
-	int vertices = 5;
 	vector<vector<int>> graph = {
 		{0, 1, 1, 1, 0},
 		{1, 0, 1, 0, 0},
