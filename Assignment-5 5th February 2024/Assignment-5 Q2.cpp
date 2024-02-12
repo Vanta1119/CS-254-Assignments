@@ -1,33 +1,61 @@
 #include <bits/stdc++.h>
+
 using namespace std;
 
-struct QueueEntry {
+struct QueueEntry{
 	int vertex;
 	int distance;
 };
 
-int GetDiceThrows(vector<int> moves, int N) {
-	bool* visited = new bool[N]();
+vector<int> ConvertBoard(vector<vector<int>> Board){
+	int m = Board.size(), n = Board[0].size();
+	vector<int> Line;
+
+	int row, col;
+
+	for(int i = 0; i < m; i++){
+		row = i / n;
+
+		if(row % 2 == 0){
+			for(int j = 0; j < n; j++){
+				Line.push_back(Board[i][j]);
+			}
+		}
+		else{
+			for(int j = n - 1; j >= 0; j--){
+				Line.push_back(Board[i][j]);
+			}
+		}
+	}
+
+	return Line;
+}
+
+int GetDiceThrows(vector<vector<int>> Board){
+	vector<int> moves = ConvertBoard(Board);
+	int n = moves.size();
+	
+	vector<bool> visited(n);
 	queue<QueueEntry> q;
 
 	visited[0] = true;
 
-	QueueEntry start = { 0, 0 };
+	QueueEntry start = {0, 0}, current;
 	q.push(start);
 
-	QueueEntry current;
-	while (!q.empty()) {
+	while(!q.empty()){
 		current = q.front();
 		int v = current.vertex;
 
-		if(v == N - 1) break;
+		if(v == n - 1) break;
 
 		q.pop();
 
-		for(int j = v + 1; j <= (v + 6) && j < N; ++j){
+		for(int j = v + 1; j <= (v + 6) && j < n; j++){
 			if(!visited[j]){
 				QueueEntry next;
 				next.distance = (current.distance + 1);
+
 				visited[j] = true;
 				next.vertex = (moves[j] != -1) ? moves[j] : j;
 				q.push(next);
@@ -38,32 +66,29 @@ int GetDiceThrows(vector<int> moves, int N) {
 	return current.distance;
 }
 
-void Display(vector<int> Matrix){
+void Display(vector<vector<int>> Matrix){
     for(int i = 0; i < Matrix.size(); i++){
-        cout << Matrix[i] << " ";
+        for(int j = 0; j < Matrix[0].size(); j++){
+            cout << Matrix[i][j] << " ";
+        }
+        cout << endl;
     }
 
     cout << endl;
 }
 
 int main() {
-	int BoardSize = 30;
-	vector<int> Board(BoardSize, -1);
-
-    // Ladders
-	Board[2] = 21;
-	Board[4] = 7;
-	Board[10] = 25;
-	Board[19] = 28;
-
-    // Snakes
-	Board[26] = 0;
-	Board[20] = 8;
-	Board[16] = 3;
-	Board[18] = 6;
+	vector<vector<int>> Board = {
+		{-1, -1, -1, 0, -1},
+		{8, -1, -1, -1, -1},
+		{28, 6, -1, 3, -1},
+		{25, -1, -1, -1, -1},
+		{-1, -1, -1, -1, -1},
+		{-1, -1, 21, -1, 7},
+	};
 
     Display(Board);
 
-	cout << "Minimum number of dice throws required is " << GetDiceThrows(Board, BoardSize) << endl;
+	cout << "Minimum number of dice throws required is: " << GetDiceThrows(Board) << endl;
 	return 0;
 }
