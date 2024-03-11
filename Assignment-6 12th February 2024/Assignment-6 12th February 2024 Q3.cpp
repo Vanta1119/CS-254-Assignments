@@ -1,71 +1,75 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 
 using namespace std;
 
-vector<vector<int>> tarjanSCC(const vector<vector<int>>& graph) {
-    int n = graph.size();
-    vector<int> low(n, -1), disc(n, -1);
-    vector<bool> onStack(n, false);
-    stack<int> st;
-    vector<vector<int>> SCCs;
-    int time = 0;
+void DFS(int node, vector<vector<int>> adjList, vector<int>& vis, stack<int>& st){
+    vis[node]=1;
 
-    function<void(int)> DFS = [&](int u) {
-        low[u] = disc[u] = time++;
-        st.push(u);
-        onStack[u] = true;
-
-        for (int v : graph[u]) {
-            if (disc[v] == -1) {
-                DFS(v);
-                low[u] = min(low[u], low[v]);
-            } else if (onStack[v]) {
-                low[u] = min(low[u], disc[v]);
-            }
-        }
-
-        if (low[u] == disc[u]) {
-            vector<int> scc;
-            int v;
-            do {
-                v = st.top();
-                st.pop();
-                onStack[v] = false;
-                scc.push_back(v);
-            } while (v != u);
-            SCCs.push_back(scc);
-        }
-    };
-
-    for (int i = 0; i < n; ++i) {
-        if (disc[i] == -1) {
-            DFS(i);
-        }
+    for(auto e: adjList[node]){
+        if(!vis[e]) DFS(e,adjList,vis,st);
     }
-    return SCCs;
+
+    st.push(node);
 }
 
-int main() {
-    int n, m;
-    cin >> n >> m;
+void DFS2(int node, vector<vector<int>> Radj, vector<int>& vis, vector<int>& temp){
+    vis[node]=1;
+    temp.push_back(node);
+    for(auto e: Radj[node]){
+        if(!vis[e]) DFS2(e,Radj,vis,temp);
+    }
+}
 
-    vector<vector<int>> graph(n);
+void Kosaraju(int E, int V ,vector<vector<int>> adjList, vector<vector<int>>& scc){
+    stack<int>st;
+    vector<int> vis(V,0);
 
-    for (int i = 0; i < m; ++i) {
-        int u, v;
-        cin >> u >> v;
-        graph[u].push_back(v);
+    for(int i=0; i<V; i++){
+        if(!vis[i]) DFS(i,adjList,vis,st);
     }
 
-    vector<vector<int>> SCCs = tarjanSCC(graph);
-
-    cout << "Strongly Connected Components:\n";
-    for (const auto& scc : SCCs) {
-        for (int node : scc) {
-            cout << node << " ";
+    vector<vector<int>> Radj(V);
+    for(int i=0; i<V; i++){
+        vis[i]=0;
+        for(auto el: adjList[i]){
+            Radj[el].push_back(i);
         }
-        cout << "\n";
     }
 
-    return 0;
+    while(!st.empty()){
+        int node=st.top();
+        st.pop();
+            if(!vis[node]){ 
+                vector<int> temp;
+                DFS2(node,Radj,vis,temp);
+                scc.push_back(temp);
+            }
+        }
+    }
+
+
+
+int main(){
+    int E,V;
+    cin >> V;
+    cin >> E;
+
+    vector<vector<int>> adjList(V);
+    for(int i = 0; i < E; i++){
+        int from, to;
+        cin >> from >> to ;
+        adjList[from].push_back(to);
+    }
+
+    vector<vector<int>> scc;
+    Kosaraju(E, V, adjList, scc);
+    
+    for(int i = 0; i < scc.size(); i++){
+        cout << "Strongly Connected Component #" << i+1 << " is: ";
+        for(int j=0; j<scc[i].size(); j++){
+            cout << scc[i][j] << " ";
+        }
+        cout << endl;
+    }
+
 }
