@@ -1,35 +1,70 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
 
-vector<int> p;
+struct Edge {
+    int src, dest, weight;
+};
 
-int find(int x) {
-    if(x==p[x]) return x;
-    return p[x] = find(p[x]);
+int findParent(int node, vector<int>& parent) {
+    if (parent[node] == node)
+        return node;
+    return findParent(parent[node], parent);
 }
 
-bool unite(int u, int v) {
-    int x = find(u);
-    int y = find(v);
-    if(x==y) return false;
-    p[y]=x;  return true;
+void unionSets(int u, int v, vector<int>& parent, vector<int>& rank) {
+    int uSet = findParent(u, parent);
+    int vSet = findParent(v, parent);
+
+    if (rank[uSet] < rank[vSet])
+        parent[uSet] = vSet;
+    else if (rank[vSet] < rank[uSet])
+        parent[vSet] = uSet;
+    else {
+        parent[vSet] = uSet;
+        rank[uSet]++;
+    }
+}
+
+bool compareEdges(Edge a, Edge b) {
+    return a.weight > b.weight;
+}
+
+vector<Edge> kruskalMST(int V, vector<Edge>& edges) {
+    vector<Edge> MST;
+    sort(edges.begin(), edges.end(), compareEdges);
+
+    vector<int> parent(V), rank(V, 0);
+    for (int i = 0; i < V; i++)
+        parent[i] = i;
+
+    int edgeCount = 0;
+    for (Edge edge : edges) {
+        if (findParent(edge.src, parent) != findParent(edge.dest, parent)) {
+            MST.push_back(edge);
+            unionSets(edge.src, edge.dest, parent, rank);
+            edgeCount++;
+        }
+        if (edgeCount == V - 1)
+            break;
+    }
+    return MST;
 }
 
 int main() {
-    array<int,3> e; int ans=0;
-    int n, m; cin >> n >> m;
-    int u, v, w; p.resize(n+1);
-    for(int i=0; i<n; ++i) p[i] = i;
-    priority_queue<array<int,3>> Q;
-    for(int i=0; i<m; ++i) {
-        cin >> u >> v >> w;
-        e = {w, u, v};
-        Q.push(e);
+    int E, V;
+    cin >> V >> E;
+
+    vector<Edge> edges(E);
+    for (int i = 0; i < E; i++) {
+        cin >> edges[i].src >> edges[i].dest >> edges[i].weight;
     }
-    while(!Q.empty()) {
-        auto [w_e, v1, v2] = Q.top();
-        Q.pop();
-        if(unite(v1,v2)) ans += w_e;
+
+    vector<Edge> MST = kruskalMST(V, edges);
+
+    cout << "Edges in the Minimum Spanning Tree:" << endl;
+    for (Edge edge : MST) {
+        cout << edge.src << " - " << edge.dest << " : " << edge.weight << endl;
     }
-    cout << ans << "\n";
+
+    return 0;
 }
