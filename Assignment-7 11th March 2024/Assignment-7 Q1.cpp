@@ -27,7 +27,7 @@ pair<vector<string>, int> Greedy(vector<Item> &items, int W){
     vector<string> ans;
     int res = 0;
 
-    for(auto item : items){
+    for(Item item: items){
         if(W >= item.weight){
             W -= item.weight;
             res += item.value;
